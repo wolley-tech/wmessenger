@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  wmessenger:
+    image: wmessenger-app
+    container_name: wmessenger-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"             # porta da aplicação
+      - "8086:8086"             # porta de debug remoto
+    environment:
+      SPRING_PROFILES_ACTIVE: "default"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/wmessenger
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: wmessenger
+      JAVA_TOOL_OPTIONS: "-Xms256m -Xmx512m"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - default-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: wmessenger-postgres
+    command: -c 'max_connections=20'
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: wmessenger
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: wmessenger
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d wmessenger"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - default-network
+
+networks:
+  default-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,29 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+      file: ./docker-compose.yml
+      lifecycle-management: start-and-stop
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wmessenger
+    username: appuser
+    password: wmessenger
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # opções: none | validate | update | create | create-drop
+    show-sql: true       # mostra as queries SQL no console
+    properties:
+      hibernate:
+        format_sql: true # formata as queries para melhor leitura
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Opcional: configurações para log SQL detalhado
+  logging:
+    level:
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+

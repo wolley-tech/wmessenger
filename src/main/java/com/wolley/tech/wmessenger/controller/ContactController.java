@@ -17,16 +17,24 @@ public class ContactController {
     }
 
     @PostMapping
-    public ResponseEntity<ContactDTO> save(@RequestBody ContactDTO contactDTO){
-        var contactSaved = service.save(contactDTO);
+    public ResponseEntity<ContactDTO> save(@RequestBody ContactDTO requestDTO) {
+        var contactSaved = service.save(requestDTO);
         return ResponseEntity
                 .status(201)
                 .body(contactSaved);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ContactDTO> update(@PathVariable Long id,
+                                             @RequestBody ContactDTO contactDTO) {
+        var contactUpdated = service.update(id, contactDTO);
+        return ResponseEntity
+                .ok(contactUpdated);
+    }
+
     @GetMapping
-    public ResponseEntity<List<ContactDTO>> findAll(){
-       List<ContactDTO> contacts =  service.findAll();
-       return ResponseEntity.ok(contacts);
+    public ResponseEntity<List<ContactDTO>> findAll() {
+        List<ContactDTO> contacts = service.findAll();
+        return ResponseEntity.ok(contacts);
     }
 }

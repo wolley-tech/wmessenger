@@ -2,6 +2,8 @@ package com.wolley.tech.wmessenger.model;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity(name = "contacts")
 public class Contact {
     @Id
@@ -18,6 +20,10 @@ public class Contact {
     @Column(name = "age_group", length = 20)
     @Enumerated(EnumType.STRING)
     private AgeGroup ageGroup;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "agent_id")
+    private ContactAgent agent;
 
     public Long getId() {
         return id;
@@ -60,4 +66,23 @@ public class Contact {
     }
 
 
+    public ContactAgent getAgent() {
+        return agent;
+    }
+
+    public void setAgent(ContactAgent agent) {
+        this.agent = agent;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return Objects.equals(id, contact.id) && Objects.equals(name, contact.name) && Objects.equals(phoneNumber, contact.phoneNumber) && gender == contact.gender && ageGroup == contact.ageGroup;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, phoneNumber, gender, ageGroup);
+    }
 }

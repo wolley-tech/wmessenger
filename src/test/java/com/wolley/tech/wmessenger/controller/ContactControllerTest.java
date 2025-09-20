@@ -3,102 +3,87 @@ package com.wolley.tech.wmessenger.controller;
 
 import com.wolley.tech.wmessenger.model.AgeGroup;
 import com.wolley.tech.wmessenger.model.Contact;
+import com.wolley.tech.wmessenger.model.ContactAgent;
 import com.wolley.tech.wmessenger.model.GenderEnum;
+import com.wolley.tech.wmessenger.repository.ContactAgentRepository;
 import com.wolley.tech.wmessenger.repository.ContactRepository;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ContactControllerTest {
-    @LocalServerPort
-    private Integer port;
+public class ContactControllerTest extends BaseControllerTest {
 
     @Autowired
     private ContactRepository repository;
 
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:16-alpine"
-    )
-            //.withExposedPorts(55432)
-            .withDatabaseName("wmessenger")
-            .withUsername("appuser")
-            .withPassword("wmessenger")
-            .withInitScript("schema.sql");
+    @Autowired
+    private ContactAgentRepository contactAgentRepository;
 
-    @BeforeAll
-    static void beforeAll() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgres.stop();
-    }
 
     @BeforeEach
-    void setUp() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-
+    void setUpTests() {
+        contactAgentRepository.deleteAll();
         repository.deleteAll();
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
     }
 
     @Test
     void shouldSaveContacts() {
 
+        var agent = new ContactAgent();
+        agent.setAgentKey(UUID.randomUUID());
+        agent.setName("Name agent");
+        agent.setPhoneNumber("1155555555");
+        var agentSaved = contactAgentRepository.save(agent);
+
 
         given()
                 .contentType(ContentType.JSON)
+                .header("Content-type", ContentType.JSON)
+                .header("X-agent-key", agentSaved.getAgentKey())
                 .body("""
                         {
                            "name": "Wolley",
                            "gender": "MALE",
                            "ageGroup": "CHILD",
-                           "phoneNumber": "11986064917"
+                           "phoneNumber": "11977777777"
                         }
                         """)
                 .when()
-                .post("/api/contacts")
+                .post("/contacts")
                 .then()
                 .statusCode(201)
                 .contentType("application/json")
                 .body("name", is("Wolley"))
                 .body("gender", is("MALE"))
                 .body("ageGroup", is("CHILD"))
-                .body("phoneNumber", is("11986064917"));
+                .body("phoneNumber", is("11977777777"));
 
     }
 
 
     @Test
     void shouldGetContacts() {
+        var agent = new ContactAgent();
+        agent.setAgentKey(UUID.randomUUID());
+        agent.setName("Name agent");
+        agent.setPhoneNumber("1155555555");
+        var agentSaved = contactAgentRepository.save(agent);
+
+
         var contact = new Contact();
         contact.setName("Name test");
         contact.setPhoneNumber("1199999999");
         contact.setAgeGroup(AgeGroup.ADULT);
         contact.setGender(GenderEnum.FEMALE);
+        contact.setAgent(agentSaved);
         repository.save(contact);
 
         contact = new Contact();
@@ -106,6 +91,7 @@ public class ContactControllerTest {
         contact.setPhoneNumber("1177777777");
         contact.setAgeGroup(AgeGroup.ADULT);
         contact.setGender(GenderEnum.FEMALE);
+        contact.setAgent(agentSaved);
         repository.save(contact);
 
         given()
@@ -118,5 +104,47 @@ public class ContactControllerTest {
 
 
     }
+
+
+    @Test
+    void shouldUpdateContacts() {
+        var agent = new ContactAgent();
+        agent.setAgentKey(UUID.randomUUID());
+        agent.setName("Name agent");
+        agent.setPhoneNumber("1155555555");
+        var agentSaved = contactAgentRepository.save(agent);
+
+
+        var contact = new Contact();
+        contact.setName("Name test");
+        contact.setPhoneNumber("1199999999");
+        contact.setAgeGroup(AgeGroup.ADULT);
+        contact.setGender(GenderEnum.FEMALE);
+        contact.setAgent(agentSaved);
+        Contact saved = repository.save(contact);
+
+        given()
+                .header("Content-type", ContentType.JSON)
+                .and()
+                .body("""
+                        {
+                           "name": "Wolley",
+                           "gender": "MALE",
+                           "ageGroup": "CHILD",
+                           "phoneNumber": "11977777777"
+                        }
+                        """)
+                .when()
+                .put(String.format("/contacts/%s", saved.getId()))
+                .then()
+                .statusCode(200)
+                .body("name", is("Wolley"))
+                .body("gender", is("MALE"))
+                .body("ageGroup", is("CHILD"))
+                .body("phoneNumber", is("11977777777"));
+
+
+    }
+
 
 }

@@ -21,7 +21,7 @@ public class ContactAgentControllerTest extends BaseControllerTest {
 
     @BeforeEach
     void cleanDatabase() {
-        repository.deleteAll();
+        repository.deleteAllInBatch();
     }
 
 

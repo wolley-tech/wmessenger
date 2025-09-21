@@ -16,7 +16,7 @@ public abstract class BaseControllerTest {
     protected Integer port;
 
     @BeforeEach
-    void setUp() {
+    void setUpBase() {
         RestAssured.baseURI = "http://localhost/api";
         RestAssured.port = port;
     }

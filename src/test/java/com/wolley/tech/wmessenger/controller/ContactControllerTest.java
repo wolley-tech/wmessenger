@@ -30,8 +30,9 @@ public class ContactControllerTest extends BaseControllerTest {
 
     @BeforeEach
     void setUpTests() {
-        contactAgentRepository.deleteAll();
-        repository.deleteAll();
+        repository.deleteAllInBatch();
+        contactAgentRepository.deleteAllInBatch();
+
     }
 
     @Test
@@ -47,7 +48,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .header("Content-type", ContentType.JSON)
-                .header("X-agent-key", agentSaved.getAgentKey())
+                .header("X-agent-key", agentSaved.getAgentKey().toString())
                 .body("""
                         {
                            "name": "Wolley",
@@ -96,8 +97,9 @@ public class ContactControllerTest extends BaseControllerTest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header("X-agent-key", agentSaved.getAgentKey().toString())
                 .when()
-                .get("/api/contacts")
+                .get("/contacts")
                 .then()
                 .statusCode(200)
                 .body(".", hasSize(2));
@@ -125,6 +127,7 @@ public class ContactControllerTest extends BaseControllerTest {
 
         given()
                 .header("Content-type", ContentType.JSON)
+                .header("X-agent-key", agentSaved.getAgentKey().toString())
                 .and()
                 .body("""
                         {

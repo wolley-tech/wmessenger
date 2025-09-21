@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/contacts")
@@ -17,24 +18,26 @@ public class ContactController {
     }
 
     @PostMapping
-    public ResponseEntity<ContactDTO> save(@RequestBody ContactDTO requestDTO) {
-        var contactSaved = service.save(requestDTO);
+    public ResponseEntity<ContactDTO> save(@RequestHeader("X-agent-key")UUID agentKey,
+                                           @RequestBody ContactDTO requestDTO) {
+        var contactSaved = service.save(requestDTO, agentKey);
         return ResponseEntity
                 .status(201)
                 .body(contactSaved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContactDTO> update(@PathVariable Long id,
+    public ResponseEntity<ContactDTO> update(@RequestHeader("X-agent-key") UUID agentKey,
+                                             @PathVariable Long id,
                                              @RequestBody ContactDTO contactDTO) {
-        var contactUpdated = service.update(id, contactDTO);
+        var contactUpdated = service.update(id, contactDTO, agentKey);
         return ResponseEntity
                 .ok(contactUpdated);
     }
 
     @GetMapping
-    public ResponseEntity<List<ContactDTO>> findAll() {
-        List<ContactDTO> contacts = service.findAll();
+    public ResponseEntity<List<ContactDTO>> findAll(@RequestHeader("X-agent-key") UUID agentKey) {
+        List<ContactDTO> contacts = service.findByAgent(agentKey);
         return ResponseEntity.ok(contacts);
     }
 }

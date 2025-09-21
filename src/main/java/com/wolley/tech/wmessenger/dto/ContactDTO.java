@@ -7,7 +7,8 @@ public record ContactDTO(Long id,
                          String name,
                          GenderEnum gender,
                          AgeGroup ageGroup,
-                         String phoneNumber) {
+                         String phoneNumber,
+                         String agentKey) {
 
 
 
@@ -15,13 +16,15 @@ public record ContactDTO(Long id,
                                  String name,
                                  GenderEnum gender,
                                  AgeGroup ageGroup,
-                                 String phoneNumber){
+                                 String phoneNumber,
+                                 String agentKey){
         return new ContactDTO(
                 id,
                 name,
                 gender,
                 ageGroup,
-                phoneNumber
+                phoneNumber,
+                agentKey
         );
     }
 }

@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS contacts (
     gender VARCHAR(50),
     age_group VARCHAR(50),
     agent_id bigint,
-    CONSTRAINT fk_agent_id FOREIGN KEY(agent_id) REFERENCES contacts(id)
+    CONSTRAINT fk_agent_id FOREIGN KEY(agent_id) REFERENCES contact_agents(id)
 );

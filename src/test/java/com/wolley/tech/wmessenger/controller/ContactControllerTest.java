@@ -39,6 +39,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .header("Content-type", ContentType.JSON)
+                .header(HEADER_API_KEY, apiKey)
                 .body("""
                         {
                            "name": "Wolley",
@@ -62,6 +63,7 @@ public class ContactControllerTest extends BaseControllerTest {
                 .contentType(ContentType.JSON)
                 .header("Content-type", ContentType.JSON)
                 .header("X-agent-key", UUID.randomUUID())
+                .header(HEADER_API_KEY, apiKey)
                 .body("""
                         {
                            "name": "Wolley",
@@ -85,6 +87,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .header("X-agent-key", UUID.randomUUID())
+                .header(HEADER_API_KEY, apiKey)
                 .when()
                 .get("/contacts")
                 .then()
@@ -98,6 +101,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .header("Content-type", ContentType.JSON)
                 .header("X-agent-key", UUID.randomUUID())
+                .header(HEADER_API_KEY, apiKey)
                 .and()
                 .body("""
                         {
@@ -132,6 +136,7 @@ public class ContactControllerTest extends BaseControllerTest {
                 .contentType(ContentType.JSON)
                 .header("Content-type", ContentType.JSON)
                 .header("X-agent-key", agentSaved.getAgentKey())
+                .header(HEADER_API_KEY, apiKey)
                 .body("""
                         {
                            "name": "Wolley",
@@ -181,6 +186,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .header("X-agent-key", agentSaved.getAgentKey().toString())
+                .header(HEADER_API_KEY, apiKey)
                 .when()
                 .get("/contacts")
                 .then()
@@ -211,6 +217,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .header("Content-type", ContentType.JSON)
                 .header("X-agent-key", agentSaved.getAgentKey().toString())
+                .header(HEADER_API_KEY, apiKey)
                 .and()
                 .body("""
                         {

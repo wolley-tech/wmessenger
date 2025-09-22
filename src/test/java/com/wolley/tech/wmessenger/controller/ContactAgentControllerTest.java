@@ -29,6 +29,7 @@ public class ContactAgentControllerTest extends BaseControllerTest {
     void shouldSaveContactAgents() {
         given()
                 .contentType(ContentType.JSON)
+                .header(HEADER_API_KEY, apiKey)
                 .body("""
                         {
                            "name": "Wolley",
@@ -51,6 +52,7 @@ public class ContactAgentControllerTest extends BaseControllerTest {
     void get_when_phoneNumber_isNotFound_then_return404() {
         given()
                 .contentType(ContentType.JSON)
+                .header(HEADER_API_KEY, apiKey)
                 .when()
                 .get(String.format("/contact-agents/phoneNumber/%s", 1))
                 .then()
@@ -70,6 +72,7 @@ public class ContactAgentControllerTest extends BaseControllerTest {
 
         given()
                 .contentType(ContentType.JSON)
+                .header(HEADER_API_KEY, apiKey)
                 .when()
                 .get(String.format("/contact-agents/phoneNumber/%s", saved.getPhoneNumber()))
                 .then()

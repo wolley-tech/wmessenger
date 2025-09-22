@@ -16,6 +16,7 @@ services:
       SPRING_DATASOURCE_USERNAME: appuser
       SPRING_DATASOURCE_PASSWORD: wmessenger
       JAVA_TOOL_OPTIONS: "-Xms256m -Xmx512m"
+      API_KEY: ${API_KEY}       # shell export API_KEY="super-secreta-em-producao"
     depends_on:
       - postgres
     restart: unless-stopped

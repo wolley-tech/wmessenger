@@ -27,3 +27,6 @@ spring:
       org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 
+security:
+  api:
+    key: ${API_KEY:local-dev-key}

@@ -2,6 +2,7 @@ package com.wolley.tech.wmessenger.controller;
 
 import com.wolley.tech.wmessenger.dto.ContactDTO;
 import com.wolley.tech.wmessenger.service.ContactService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/contacts")
+@SecurityRequirement(name = "apiKeyAuth")
 public class ContactController {
     private final ContactService service;
 

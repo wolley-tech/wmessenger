@@ -15,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 
 public class ContactControllerTest extends BaseControllerTest {
@@ -36,7 +35,91 @@ public class ContactControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void shouldSaveContacts() {
+    void save_when_agentKeyHeaderNotSend_then_returnStatus400() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Content-type", ContentType.JSON)
+                .body("""
+                        {
+                           "name": "Wolley",
+                           "gender": "MALE",
+                           "ageGroup": "CHILD",
+                           "phoneNumber": "11977777777"
+                        }
+                        """)
+                .when()
+                .post("/contacts")
+                .then()
+                .statusCode(400)
+                .contentType("application/problem+json")
+                .body("detail", notNullValue());
+    }
+
+
+    @Test
+    void save_when_agent_isNotFound_then_returnStatus404() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Content-type", ContentType.JSON)
+                .header("X-agent-key", UUID.randomUUID())
+                .body("""
+                        {
+                           "name": "Wolley",
+                           "gender": "MALE",
+                           "ageGroup": "CHILD",
+                           "phoneNumber": "11977777777"
+                        }
+                        """)
+                .when()
+                .post("/contacts")
+                .then()
+                .statusCode(404)
+                .contentType("application/problem+json")
+                .body("detail", notNullValue());
+    }
+
+
+    @Test
+    void get_when_agentKey_isNotFound_then_returnStatus404() {
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("X-agent-key", UUID.randomUUID())
+                .when()
+                .get("/contacts")
+                .then()
+                .statusCode(404)
+                .contentType("application/problem+json")
+                .body("detail", notNullValue());
+    }
+
+    @Test
+    void update_when_agentKey_isNotFound_then_returnStatus404() {
+        given()
+                .header("Content-type", ContentType.JSON)
+                .header("X-agent-key", UUID.randomUUID())
+                .and()
+                .body("""
+                        {
+                           "name": "Wolley",
+                           "gender": "MALE",
+                           "ageGroup": "CHILD",
+                           "phoneNumber": "11977777777"
+                        }
+                        """)
+                .when()
+                .put(String.format("/contacts/%s", 1))
+                .then()
+                .statusCode(404)
+                .contentType("application/problem+json")
+                .body("detail", notNullValue());
+    }
+
+
+
+
+    @Test
+    void saveContacts() {
 
         var agent = new ContactAgent();
         agent.setAgentKey(UUID.randomUUID());
@@ -48,7 +131,7 @@ public class ContactControllerTest extends BaseControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .header("Content-type", ContentType.JSON)
-                .header("X-agent-key", agentSaved.getAgentKey().toString())
+                .header("X-agent-key", agentSaved.getAgentKey())
                 .body("""
                         {
                            "name": "Wolley",
@@ -71,7 +154,7 @@ public class ContactControllerTest extends BaseControllerTest {
 
 
     @Test
-    void shouldGetContacts() {
+    void getContacts() {
         var agent = new ContactAgent();
         agent.setAgentKey(UUID.randomUUID());
         agent.setName("Name agent");
@@ -109,7 +192,7 @@ public class ContactControllerTest extends BaseControllerTest {
 
 
     @Test
-    void shouldUpdateContacts() {
+    void updateContacts() {
         var agent = new ContactAgent();
         agent.setAgentKey(UUID.randomUUID());
         agent.setName("Name agent");
@@ -145,8 +228,6 @@ public class ContactControllerTest extends BaseControllerTest {
                 .body("gender", is("MALE"))
                 .body("ageGroup", is("CHILD"))
                 .body("phoneNumber", is("11977777777"));
-
-
     }
 
 

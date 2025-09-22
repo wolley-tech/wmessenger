@@ -27,7 +27,6 @@ public class ContactAgentControllerTest extends BaseControllerTest {
 
     @Test
     void shouldSaveContactAgents() {
-
         given()
                 .contentType(ContentType.JSON)
                 .body("""
@@ -45,7 +44,19 @@ public class ContactAgentControllerTest extends BaseControllerTest {
                 .body("id", notNullValue())
                 .body("agentKey", notNullValue())
                 .body("phoneNumber", is("11977777777"));
+    }
 
+
+    @Test
+    void get_when_phoneNumber_isNotFound_then_return404() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(String.format("/contact-agents/phoneNumber/%s", 1))
+                .then()
+                .statusCode(404)
+                .contentType("application/problem+json")
+                .body("detail", notNullValue());
     }
 
     @Test

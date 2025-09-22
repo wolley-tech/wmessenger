@@ -2,6 +2,7 @@ package com.wolley.tech.wmessenger.service;
 
 import com.wolley.tech.wmessenger.dto.ContactAgentDTO;
 import com.wolley.tech.wmessenger.exception.ContactAgentNotFoundException;
+import com.wolley.tech.wmessenger.exception.InvalidParameterException;
 import com.wolley.tech.wmessenger.model.ContactAgent;
 import com.wolley.tech.wmessenger.repository.ContactAgentRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import java.util.UUID;
 
 @Service
 public class ContactAgentService {
+    public static final String INVALID_PHONENUMBER_PARAM = "O número do telefone não pode ser nulo ou vazio";
+    public static final String AGENT_NOT_FOUND = "Agente não cadastrado";
     private final ContactAgentRepository repository;
 
     public ContactAgentService(ContactAgentRepository repository) {
@@ -31,11 +34,11 @@ public class ContactAgentService {
     public ContactAgentDTO findByPhoneNumber(String phoneNumber) {
 
         if (StringUtils.isEmpty(phoneNumber)){
-            throw new IllegalArgumentException("O número do telefone não pode ser nulo ou vazio");
+            throw new InvalidParameterException(INVALID_PHONENUMBER_PARAM);
         }
 
         var contactAgent = repository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new ContactAgentNotFoundException("Agente não cadastrado"));
+                .orElseThrow(() -> new ContactAgentNotFoundException(AGENT_NOT_FOUND));
 
         return toContactAgentDTO(contactAgent);
     }

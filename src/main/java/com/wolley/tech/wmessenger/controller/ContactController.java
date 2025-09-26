@@ -37,6 +37,15 @@ public class ContactController {
                 .ok(contactUpdated);
     }
 
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ContactDTO> findById(@RequestHeader("X-agent-key") UUID agentKey,
+                                             @PathVariable Long id) {
+        var contactDTO = service.findById(id);
+        return ResponseEntity
+                .ok(contactDTO);
+    }
+
     @GetMapping
     public ResponseEntity<List<ContactDTO>> findAll(@RequestHeader("X-agent-key") UUID agentKey) {
         List<ContactDTO> contacts = service.findByAgent(agentKey);

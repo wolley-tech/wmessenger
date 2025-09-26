@@ -57,6 +57,13 @@ public class ContactService {
                 .map(ContactService::toContactDTO).toList();
     }
 
+    public ContactDTO findById(Long id) {
+                Contact contact = repository.findById(id)
+                .orElseThrow(() -> new ContactNotFoundException("Contato não encontrado"));
+        return toContactDTO(contact);
+    }
+
+
     public ContactDTO update(Long contactId, ContactDTO contactDTO, UUID agentKey) {
 
         if (contactId == null || contactId == 0) {

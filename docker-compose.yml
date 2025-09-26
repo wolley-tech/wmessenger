@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   wmessenger:
-    image: wmessenger-app
+    image: wwsilva/wmessenger
     container_name: wmessenger-app
     build:
       context: .
@@ -44,6 +44,33 @@ services:
       - ./docker/init-scripts:/docker-entrypoint-initdb.d
     extra_hosts:
       - host.docker.internal:host-gateway
+    networks:
+      - default-network
+
+  # Frontend Angular (compilado e servido pelo Nginx)
+  frontend:
+    image: wwsilva/festa-da-vida-pwa
+    container_name: wmessenger-frontend
+    expose:
+      - "80"                 # só exposto internamente
+    depends_on:
+      - wmessenger
+    restart: unless-stopped
+    networks:
+      - default-network
+
+  # Proxy reverso (Nginx unifica backend e frontend)
+  nginx:
+    image: nginx:alpine
+    container_name: wmessenger-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - wmessenger
+    restart: unless-stopped
     networks:
       - default-network
 

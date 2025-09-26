@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate  # opções: none | validate | update | create | create-drop
+      ddl-auto: none  # opções: none | validate | update | create | create-drop
     show-sql: true       # mostra as queries SQL no console
     properties:
       hibernate:

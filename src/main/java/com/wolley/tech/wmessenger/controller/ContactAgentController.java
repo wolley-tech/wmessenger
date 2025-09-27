@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/contact-agents")
+@RequestMapping("/api/contact-agents")
 @SecurityRequirement(name = "apiKeyAuth")
 public class ContactAgentController {
     private final ContactAgentService service;
